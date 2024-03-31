@@ -37,11 +37,11 @@ main :: proc() {
 			}
 		}
 
-		SDL.RenderClear(state.renderer)
-		SDL.SetRenderDrawColor(state.renderer, 0xff, 0, 0xff, 0xff)
-
-		SDL.RenderFillRect(state.renderer, &SDL.Rect{0, 0, 10, 10})
 		SDL.SetRenderDrawColor(state.renderer, 0, 0, 0, 0xff)
+		SDL.RenderClear(state.renderer)
+
+		SDL.SetRenderDrawColor(state.renderer, 0xff, 0, 0xff, 0xff)
+		SDL.RenderFillRect(state.renderer, &SDL.Rect{0, 0, 10, 10})
 
 		SDL.RenderPresent(state.renderer)
 	}
