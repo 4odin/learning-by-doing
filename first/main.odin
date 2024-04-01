@@ -20,9 +20,12 @@ main :: proc() {
 
 	fmt.println("the result of my fantastic_func for 20 is", my_pkg.fantastic_func(20))
 
-	config := my_pkg.read_config("my_file.txt", my_pkg.EveryMilliSeconds{100})
-	fmt.printfln("%v", config)
+	config, err := my_pkg.read_config("main.odin", my_pkg.EveryMilliSeconds{100})
 
-	config = my_pkg.read_config("my_file.txt", 100)
-	fmt.printfln("%v", config)
+	if err == nil do fmt.printfln("%v", config)
+	else do fmt.eprintln(err)
+
+	config, err = my_pkg.read_config("nothing.txt", 100)
+	if err == nil do fmt.printfln("%v", config)
+	else do fmt.eprintln(err)
 }

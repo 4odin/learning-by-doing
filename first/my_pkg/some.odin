@@ -1,6 +1,9 @@
 package my_pkg
 
 import "core:fmt"
+import "core:mem"
+import "core:os"
+import "core:strings"
 
 Interval :: union {
 	Never,
@@ -28,7 +31,60 @@ fantastic_func :: proc(x: int) -> (a: int) {
 	return
 }
 
-read_config :: proc(filename: string, interval: Interval) -> (config: Configuration) {
+ParsingError :: union {
+	InvalidSyntax,
+	InvalidValue,
+}
+
+InvalidSyntax :: struct {
+	line:   int,
+	column: int,
+	data:   []byte,
+}
+
+InvalidValue :: struct {
+	line:   int,
+	column: int,
+	data:   []byte,
+	value:  string,
+}
+
+parse_configuration :: proc(data: []byte) -> (config: Configuration, err: ParsingError) {
+
+	return config, nil
+}
+
+ConfigurationError :: union {
+	ParsingError,
+	FileReadFailure,
+	mem.Allocator_Error,
+}
+
+FileReadFailure :: struct {
+	filename: string,
+	errno:    os.Errno,
+}
+
+
+read_config :: proc(
+	filename: string,
+	interval: Interval,
+) -> (
+	config: Configuration,
+	err: ConfigurationError,
+) {
+	file_data, read_successful := os.read_entire_file_from_filename(filename)
+	if !read_successful {
+		return Configuration{}, FileReadFailure{filename = filename}
+	}
+
+	// parse_error: ParsingError
+	// config, parse_error = parse_configuration(file_data)
+	// if parse_error != nil {
+	// 	return Configuration{}, parse_error
+	// }
+	config = parse_configuration(file_data) or_return
+
 	config.filename = filename
 	config.interval = interval
 
@@ -51,5 +107,7 @@ read_config :: proc(filename: string, interval: Interval) -> (config: Configurat
 		fmt.println("yes it is int =", every)
 	}
 
-	return config
+	config.url = strings.concatenate({"prefix://", config.filename}) or_return
+
+	return config, nil
 }

@@ -5,9 +5,10 @@ import "core:reflect"
 
 main :: proc() {
 	Foo :: struct {
-		x: int `tag1`,
-		y: string `json:"y_field"`,
-		z: bool, // no tag
+		some: int `tag1`,
+		x:    int `tag1`,
+		y:    string `json:"y_field"`,
+		z:    bool, // no tag
 	}
 
 	id := typeid_of(Foo)
@@ -32,5 +33,13 @@ main :: proc() {
 		if val, ok := reflect.struct_tag_lookup(tag, "json"); ok {
 			fmt.printf("json: %s -> %s\n", names[i], val)
 		}
+		if tag == "tag1" {
+			fmt.printf("tag1: %s -> %s\n", names[i], tag)
+		}
+	}
+
+	fmt.println(tags)
+	for tag, index in tags {
+		if tag == "tag1" do fmt.println(names[index])
 	}
 }
