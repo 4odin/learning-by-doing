@@ -1,0 +1,4 @@
+[DEBUG] --- [2024-04-01 15:21:12] [some.odin:90:read_config()] Parsed config: Configuration{filename = "", interval = nil, url = "", calculated_later = 0}
+
+[DEBUG] --- [2024-04-01 15:21:22] [some.odin:90:read_config()] Parsed config: Configuration{filename = "", interval = nil, url = "", calculated_later = 0}
+

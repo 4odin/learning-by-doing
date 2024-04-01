@@ -1,6 +1,7 @@
 package my_pkg
 
 import "core:fmt"
+import "core:log"
 import "core:mem"
 import "core:os"
 import "core:strings"
@@ -69,11 +70,12 @@ FileReadFailure :: struct {
 read_config :: proc(
 	filename: string,
 	interval: Interval,
+	allocator := context.allocator,
 ) -> (
 	config: Configuration,
 	err: ConfigurationError,
 ) {
-	file_data, read_successful := os.read_entire_file_from_filename(filename)
+	file_data, read_successful := os.read_entire_file_from_filename(filename, allocator)
 	if !read_successful {
 		return Configuration{}, FileReadFailure{filename = filename}
 	}
@@ -84,6 +86,8 @@ read_config :: proc(
 	// 	return Configuration{}, parse_error
 	// }
 	config = parse_configuration(file_data) or_return
+
+	log.debugf("Parsed config: %v\n", config)
 
 	config.filename = filename
 	config.interval = interval
@@ -107,7 +111,7 @@ read_config :: proc(
 		fmt.println("yes it is int =", every)
 	}
 
-	config.url = strings.concatenate({"prefix://", config.filename}) or_return
+	config.url = strings.concatenate({"prefix://", config.filename}, allocator) or_return
 
 	return config, nil
 }

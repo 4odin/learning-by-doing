@@ -1,2 +1,2 @@
 clean:
-	rm *.exe ./**/*.exe
+	rm ./*.exe ./**/*.exe ./*.pdb ./**/*.pdb 
