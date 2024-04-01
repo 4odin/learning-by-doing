@@ -1,0 +1,231 @@
+version: 3
+
+tasks:
+  default:
+    cmds:
+      - task: test
+
+  run:
+    deps:
+      - build
+    cmds:
+      - bin/my_pkg
+    silent: true
+    method: none
+
+  build:
+    cmds:
+      - odin build my_pkg -out=bin/my_pkg
+    aliases:
+      - b
+    silent: true
+    sources:
+      - ./my_pkg/**/*.odin
+    generates:
+      - bin/my_pkg
+
+  build_debug:
+    cmds:
+      - odin build my_pkg -out=bin/my_pkg-debug -o:none -debug
+    aliases:
+      - bd
+    silent: true
+    sources:
+      - ./my_pkg/**/*.odin
+    generates:
+      - bin/my_pkg-debug
+
+  build_sgrep:
+    cmds:
+      - odin build sgrep -out:bin/sgrep -o:speed -collection:dependencies=dependencies
+    aliases:
+      - bs
+    silent: true
+    sources:
+      - ./sgrep/**/*.odin
+    generates:
+      - bin/sgrep
+
+  sgrep:
+    deps:
+      - build_sgrep
+    cmds:
+      - bin/sgrep
+    silent: true
+    method: none
+
+  debug:
+    deps:
+      - build_debug
+    cmds:
+      - gdb bin/my_pkg-debug
+    aliases:
+      - d
+    silent: true
+    method: none
+
+  test:
+    cmds:
+      - odin test my_pkg
+    aliases:
+      - t
+    method: none
+    silent: true
+    sources:
+      - ./my_pkg/**/*.odin
+
+  test_uuid:
+    cmds:
+      - odin test uuid
+    aliases:
+      - tu
+    method: none
+    silent: true
+    sources:
+      - ./uuid/**/*.odin
+
+  build_testcase:
+    cmds:
+      - odin build testcase -out:bin/testcase -o:none -debug
+    silent: true
+    sources:
+      - ./testcase/**/*.odin
+    generates:
+      - bin/testcase
+
+  testcase:
+    deps:
+      - build_testcase
+    cmds:
+      - gdb bin/testcase
+    silent: true
+    method: none
+
+  types_and_data:
+    deps:
+      - build_types_and_data
+    silent: true
+    cmds:
+      - bin/types-and-data {{.CLI_ARGS}}
+    method: none
+
+  build_types_and_data:
+    cmds:
+      - odin build types-and-data -out:bin/types-and-data -o:none -debug
+    silent: true
+    sources:
+      - ./types-and-data/**/*.odin
+    generates:
+      - bin/types-and-data
+
+  bits_and_bobs:
+    deps:
+      - build_bits_and_bobs
+    silent: true
+    cmds:
+      - bin/bits-and-bobs {{.CLI_ARGS}}
+    method: none
+
+  build_bits_and_bobs:
+    cmds:
+      - odin build bits-and-bobs -out:bin/bits-and-bobs -o:none -debug
+    silent: true
+    sources:
+      - ./bits-and-bobs/**/*.odin
+    generates:
+      - bin/bits-and-bobs
+
+  byte_order:
+    deps:
+      - build_byte_order
+    silent: true
+    cmds:
+      - bin/byte-order {{.CLI_ARGS}}
+    method: none
+
+  build_byte_order:
+    cmds:
+      - odin build byte-order -out:bin/byte-order -o:none -debug
+    silent: true
+    sources:
+      - ./byte-order/**/*.odin
+    generates:
+      - bin/byte-order
+
+  build_lz4_frames:
+    cmds:
+      - odin build lz4-frames -out:bin/lz4-frames -o:speed
+    silent: true
+    sources:
+      - ./lz4-frames/**/*.odin
+    generates:
+      - bin/lz4-frames
+
+  test_lz4_frames:
+    cmds:
+      - odin test lz4-frames -out:bin/lz4-frames-test
+    silent: true
+    method: none
+    sources:
+      - ./lz4-frames/**/*.odin
+
+  http_client:
+    deps:
+      - build_http_client
+    cmds:
+      - bin/http-client
+    method: none
+    silent: true
+
+  build_http_client:
+    cmds:
+      - odin build http-client -out:bin/http-client -o:none -debug
+    silent: true
+    sources:
+      - ./http-client/**/*.odin
+    generates:
+      - bin/http-client
+
+  debug_http_client:
+    deps:
+      - build_http_client
+    cmds:
+      - gdb bin/http-client
+    method: none
+    silent: true
+
+  objects:
+    deps:
+      - build_objects
+    cmds:
+      - bin/objects
+    method: none
+    silent: true
+
+  build_objects:
+    cmds:
+      - odin build objects -out:bin/objects -o:none -debug
+    silent: true
+    sources:
+      - ./objects/**/*.odin
+    generates:
+      - bin/objects
+
+  aos:
+    deps:
+      - build_aos
+    cmds:
+      - bin/aos {{.CLI_ARGS}}
+    method: none
+    silent: true
+
+  build_aos:
+    cmds:
+      - odin build aos -out:bin/aos -o:aggressive -microarch:native
+    silent: true
+    sources:
+      - ./aos/**/*.odin
+    generates:
+      - bin/aos
+
+interval: 100ms
