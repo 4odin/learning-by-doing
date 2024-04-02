@@ -18,3 +18,5 @@
 
 [DEBUG] --- [2024-04-02 05:14:31] [some.odin:211:read_config()] Parsed config: Configuration{filename = "test.txt", interval = nil, url = "", calculated_later = 0}
 
+[DEBUG] --- [2024-04-02 05:56:26] [some.odin:211:read_config()] Parsed config: Configuration{filename = "test.txt", interval = nil, url = "", calculated_later = 0}
+
