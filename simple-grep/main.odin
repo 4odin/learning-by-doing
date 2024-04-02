@@ -79,27 +79,27 @@ grep_file :: proc(pattern, filename: string, arguments: Arguments) -> GrepError 
 	read_buffer: [mem.Kilobyte]byte
 	for {
 		bytes_read, read_error := os.read(file_handle, read_buffer[:])
-		if bytes_read == 0 && read_error == os.ERROR_HANDLE_EOF {
+		if bytes_read == 0 {
 			break
 		}
+
 		if read_error != os.ERROR_NONE {
 			return UnableToReadFromFile{filename = filename, error = read_error}
 		}
 
 		s := string(read_buffer[:bytes_read])
 		lines := strings.split_lines(s) or_return
-
 		for l in lines {
 			if arguments.inverted {
 				if !strings.contains(l, pattern) {
 					fmt.printf("%s\n", l)
 				}
-			} else {
-				if strings.contains(l, pattern) {
-					fmt.printf("%s\n", l)
-				}
+				continue
 			}
 
+			if strings.contains(l, pattern) {
+				fmt.printf("%s\n", l)
+			}
 		}
 	}
 

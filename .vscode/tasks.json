@@ -24,6 +24,11 @@
                 "mkdir",
                 "build"
             ]
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "make clean",
         }
     ]
 }
