@@ -1,6 +1,7 @@
 package main
 
 import "core:fmt"
+import "core:log"
 import "core:mem"
 import "core:os"
 import "core:strings"
@@ -23,26 +24,53 @@ UnableToReadFromFile :: struct {
 	error:    os.Errno,
 }
 
+Arguments :: struct {
+	inverted: bool `cli:"i,inverted"`,
+}
+
 main :: proc() {
+	context.logger = log.create_console_logger()
+
 	arguments := os.args[1:]
 	fmt.printf("%v\n", arguments)
 
-	if len(arguments) != 2 {
-		fmt.printf("Usage: simple-grep <pattern> <file>\n")
-		os.exit(1)
+	if len(arguments) < 2 {
+		fmt.printf("Usage: simple-grep <pattern> <file> [arguments]\n")
+		cli.print_help_for_struct_type_and_exit(Arguments)
 	}
 
 	pattern := arguments[0]
 	filename := arguments[1]
 
-	grep_error := grep_file(pattern, filename)
+	rest_of_arguments := arguments[2:]
+	parsed_arguments := Arguments{}
+
+	if len(rest_of_arguments) > 0 {
+		cli_parse, _, parsing_error := cli.parse_arguments_as_type(rest_of_arguments, Arguments)
+
+		if parsing_error != nil {
+			fmt.printf("Error while parsing optional arguments: %v\n", parsing_error)
+			os.exit(1)
+		}
+
+		parsed_arguments = cli_parse
+	}
+
+	grep_error := grep_file(pattern, filename, parsed_arguments)
 	if grep_error != nil {
-		fmt.printf("Error while grepping file '%s': %v\n", filename, grep_error)
+		fmt.printf("Error while grepping file '%s': %v\n", filename, grep_error, parsed_arguments)
 		os.exit(1)
 	}
 }
 
-grep_file :: proc(pattern, filename: string) -> GrepError {
+grep_file :: proc(pattern, filename: string, arguments: Arguments) -> GrepError {
+	log.debugf(
+		"Grep file: '%s' for pattern '%s' with arguments: %v\n",
+		filename,
+		pattern,
+		arguments,
+	)
+
 	file_handle, open_error := os.open(filename, os.O_RDONLY)
 	if open_error != os.ERROR_NONE {
 		return UnableToOpenFile{filename = filename, error = open_error}
@@ -62,9 +90,16 @@ grep_file :: proc(pattern, filename: string) -> GrepError {
 		lines := strings.split_lines(s) or_return
 
 		for l in lines {
-			if strings.contains(l, pattern) {
-				fmt.printf("%s\n", l)
+			if arguments.inverted {
+				if !strings.contains(l, pattern) {
+					fmt.printf("%s\n", l)
+				}
+			} else {
+				if strings.contains(l, pattern) {
+					fmt.printf("%s\n", l)
+				}
 			}
+
 		}
 	}
 
