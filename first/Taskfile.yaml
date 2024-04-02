@@ -20,7 +20,7 @@ tasks:
       - b
     silent: true
     sources:
-      - ./my_pkg/**/*.odin
+      - ./**/*.odin
     generates:
       - bin/my_pkg
 
@@ -31,7 +31,7 @@ tasks:
       - bd
     silent: true
     sources:
-      - ./my_pkg/**/*.odin
+      - ./**/*.odin
     generates:
       - bin/my_pkg-debug
 

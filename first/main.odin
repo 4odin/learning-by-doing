@@ -25,19 +25,19 @@ main :: proc() {
 	fmt.println("the result of my fantastic_func for 20 is", my_pkg.fantastic_func(20))
 
 	// definition of a stack based memory arena
-	// we use this memory in our program (256 bytes of memory block)
-	arena: virtual.Arena
-	arena_buffer: [256]u8
-	arena_init_error := virtual.arena_init_buffer(&arena, arena_buffer[:])
-	if arena_init_error != nil {
-		fmt.panicf("Error initializing arena: %v\n", arena_init_error)
-	}
+	// we use this memory in our program (200 * 1024 bytes of memory block)
+	// arena: virtual.Arena
+	// arena_buffer: [200 * 1024]u8
+	// arena_init_error := virtual.arena_init_buffer(&arena, arena_buffer[:])
+	// if arena_init_error != nil {
+	// 	fmt.panicf("Error initializing arena: %v\n", arena_init_error)
+	// }
 
 	// create a new allocator
-	arena_allocator := virtual.arena_allocator(&arena)
+	// arena_allocator := virtual.arena_allocator(&arena)
 	// defer the deletion of the memory at the end of the scope
 	// in this case the []byte is stack and will be deleted and this is not needed
-	defer virtual.arena_destroy(&arena)
+	// defer virtual.arena_destroy(&arena)
 
 	// context.allocator = arena_allocator
 	// config, err := my_pkg.read_config("file1.txt", my_pkg.EveryMilliSeconds{100})
@@ -53,12 +53,12 @@ main :: proc() {
 		log.create_file_logger(log_file_handle),
 	)
 
-	config, err := my_pkg.read_config("file1.txt", my_pkg.EveryMilliSeconds{100}, arena_allocator)
+	config, err := my_pkg.read_config("file1.txt", my_pkg.EveryMilliSeconds{100})
 	if err == nil do fmt.printfln("%v", config)
 	else do fmt.eprintln("Error:", err)
 
 	// config, err = my_pkg.read_config("file_that_does_not_exist.txt", 100)
-	config, err = my_pkg.read_config("file_that_does_not_exist.txt", 100, arena_allocator)
+	config, err = my_pkg.read_config("file_that_does_not_exist.txt", 100)
 	if err == nil do fmt.printfln("%v", config)
 	else do fmt.eprintln("Error:", err)
 }
