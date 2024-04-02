@@ -5,6 +5,8 @@ import "core:mem"
 import "core:os"
 import "core:strings"
 
+import "cli"
+
 GrepError :: union {
 	UnableToOpenFile,
 	UnableToReadFromFile,
