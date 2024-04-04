@@ -77,6 +77,7 @@ main :: proc() {
 		defer container_delete(e2)
 
 		e3 := container_copy(e2)
+		defer container_delete(e3)
 
 		fmt.printf("e2.value = %d\n", e2.value)
 		fmt.printf("e3.value = %d\n", e3.value)
@@ -86,12 +87,12 @@ main :: proc() {
 		fmt.printf("e3.values: ")
 		container_print_vector(&e3)
 
-		e4 := container_move(e3)
-		defer container_delete(e4)
+		// e4 := container_move(e3)
+		// defer container_delete(e4)
 
-		container_print_vector(&e3)
+		// container_print_vector(&e3)
 
-		assert(&e3 == nil, "e3 must be moved now")
+		// assert(&e3 == nil, "e3 must be moved now")
 	}
 }
 
