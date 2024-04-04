@@ -60,4 +60,86 @@ main :: proc() {
 
 	// log_redacted(&u.loggable)
 	log_redacted(&u) // because of "using" modifier
+
+
+	/////////// Class Example
+
+	e1: Container
+	defer container_delete(e1)
+
+	{
+		e2 := container_make(1)
+		defer container_delete(e2)
+	}
+
+	{
+		e2 := container_make(2)
+		defer container_delete(e2)
+
+		e3 := container_copy(e2)
+		defer container_delete(e3)
+
+		fmt.printf("e2.value = %d\n", e2.value)
+		fmt.printf("e3.value = %d\n", e3.value)
+		fmt.printf("e2.values: ")
+		container_print_vector(&e2)
+		fmt.printf("e3.values: ")
+		container_print_vector(&e3)
+	}
+}
+
+////////// A C++ Class to Odin Example
+
+Element :: struct {
+	value: int,
+}
+
+element_delete :: proc(element: Element) {
+	fmt.printf("element_delete: %d\n", element.value)
+}
+
+Container :: struct {
+	value:  int,
+	values: [dynamic]Element,
+}
+
+container_make :: proc(value: int, allocator := context.allocator) -> Container {
+	fmt.printf("container_make: %d\n", value)
+	values := make([dynamic]Element, 0, 3, allocator)
+
+	append(&values, Element{1}, Element{2}, Element{3})
+
+	return Container{value = value, values = values}
+}
+
+container_delete :: proc(container: Container) {
+	fmt.printf("container_delete: %d\n", container.value)
+
+	// delete individual elements first
+	for e in container.values {
+		element_delete(e)
+	}
+
+	// delete the container at the end
+	delete(container.values)
+}
+
+container_copy :: proc(other: Container, allocator := context.allocator) -> Container {
+	values := make([dynamic]Element, 0, len(other.values) + 1, allocator)
+
+	append(&values, ..other.values[:])
+	append(&values, Element{4})
+
+	return Container{value = other.value, values = values}
+}
+
+container_print_vector :: proc(container: ^Container, allocator := context.allocator) {
+	fmt.printf("%p = ", &container.values)
+	for e, i in container.values {
+		if i != 0 {
+			fmt.printf(", ")
+		}
+		fmt.printf("%d", e.value)
+	}
+	fmt.printf("\n")
 }
