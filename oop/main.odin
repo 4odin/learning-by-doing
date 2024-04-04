@@ -77,14 +77,21 @@ main :: proc() {
 		defer container_delete(e2)
 
 		e3 := container_copy(e2)
-		defer container_delete(e3)
 
 		fmt.printf("e2.value = %d\n", e2.value)
 		fmt.printf("e3.value = %d\n", e3.value)
+
 		fmt.printf("e2.values: ")
 		container_print_vector(&e2)
 		fmt.printf("e3.values: ")
 		container_print_vector(&e3)
+
+		e4 := container_move(e3)
+		defer container_delete(e4)
+
+		container_print_vector(&e3)
+
+		assert(&e3 == nil, "e3 must be moved now")
 	}
 }
 
@@ -131,6 +138,15 @@ container_copy :: proc(other: Container, allocator := context.allocator) -> Cont
 	append(&values, Element{4})
 
 	return Container{value = other.value, values = values}
+}
+
+container_move :: proc(other: Container, allocator := context.allocator) -> Container {
+	fmt.printf("container_move: %d\n", other.value)
+
+	copy := container_copy(other, allocator)
+	container_delete(other)
+
+	return copy
 }
 
 container_print_vector :: proc(container: ^Container, allocator := context.allocator) {
